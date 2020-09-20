@@ -15,9 +15,39 @@ You can install MongoDB locally or use MongoDB Atlas to run a free cloud cluster
 MongoDB Atlas is a hosted MongoDB service option in the cloud which requires no installation overhead and offers a free tier to get started. Click [here](https://www.mongodb.com/try) and use this quick tutorial to connect your db to your local environment [here](https://docs.atlas.mongodb.com/getting-started/)
 
 #### React App
-Add the following snippet to the package json in `/react-app/package.json` to complete the setup
+In your terminal, navigate to the `src/react-app` directory and run the follow commands:
+- Using NPM:
+  - `npm install`
+  - `npm run build`
+  - `npm run start`
+
+- Using Yarn
+  - `yarn install`
+  - `yarn build`
+  - `yarn start`
+
+Add the following snippet in `src/react-app/package.json` to complete the setup
 ```
-"proxy": "http://localhost:3001"
+"proxy": "http://localhost:3001" // replace `3001` with the port your nodejs server is running.
 ```
+#TODO amend: this is already in the package.json
+#TODO: mention: this will update with any change made to the react code on port 3000
+If you run into any issues, check `src/react-app/readme.md` which provides more details about the react app installation.
+
+
+## Backend
+- `src/init_data` - this is where you'd find the seed data.
+- `src/seed_data` - this is the seed data utility function to populate the database.
+- `src/index.js` - you'd find the node js API configuration here + endpoints.
+
+## Frontend
+- Check `src/react-app/src/App.js` to get started with the frontend code. 
+- Be sure to always run `npm run build` or `yarn build` every time you make changes to the react app codebase. 
+
+### Quick start
+- Run `npm run build` in the `src/react-app` directory
+- Run `npm run start` in the `src/react-app` directory to start the react dev server (which will apply any new changes to the react code)
+- Run `npm run seed` to seed the database (do this only once)
+- Run `npm run start` to start your backend server
 
 ### Assignment
