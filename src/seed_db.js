@@ -12,4 +12,5 @@ const seedDBWithAccounts = () => {
 	});
 };
 
-export { seedDBWithAccounts };
+seedDBWithAccounts()
+

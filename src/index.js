@@ -3,7 +3,6 @@ import cors from "cors";
 import "dotenv/config";
 
 import models, { connectDb } from "./models";
-import { seedDBWithAccounts } from "./seed_db";
 
 const path = require("path");
 const app = express();
@@ -28,7 +27,6 @@ app.get("/api/accounts", (req, res) => {
 });
 
 connectDb().then(async () => {
-	// seedDBWithAccounts(); NOTE: uncomment when ready to seed db
 
 	app.listen(process.env.PORT, () =>
 		console.log(`App ready and listening on port ${process.env.PORT}!`)
