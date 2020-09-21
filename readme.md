@@ -4,7 +4,7 @@ This boilerplate is built for a NodeJS backend with a MongoDB database
 ### Installation
 - Install [node.js](https://nodejs.org) if don't have it on your machine already. 
 - Create a `.env` file in the root directory of this project and populate it with the required values. See `.sample.env` file for more info.
-- Setup a MongoDB database, see section below. We recommend using MongoDB Atlas as it's easier to setup.
+- Setup a MongoDB database, see section below. We recommend using MongoDB Atlas as it's easier to setup, however a local cluster works just as well.
 
 
 #### Mongo DB
