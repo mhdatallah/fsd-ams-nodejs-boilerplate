@@ -15,7 +15,8 @@ function AccountsTable() {
 				title="Accounts"
 				tableRef={tableRef}
 				options={{
-					paging: false
+					paging: false,
+					search: false
 				}}
 				columns={[
 					{ title: 'ID', field: '_id' },
