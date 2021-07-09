@@ -1,52 +1,19 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import MaterialTable from 'material-table';
-import { alpha } from '@material-ui/core/styles'
-
-import {
-	AddBox,
-	ArrowDownward,
-	Check,
-	ChevronLeft,
-	ChevronRight,
-	Clear,
-	DeleteOutline,
-	Edit,
-	FilterList,
-	FirstPage,
-	LastPage,
-	Remove,
-	SaveAlt,
-	Search,
-	ViewColumn
-} from '@material-ui/icons';
 
 function AccountsTable() {
 
-	const tableIcons = {
-		Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-		Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-		Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-		Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-		DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-		Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-		Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-		Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-		FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-		LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-		NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-		PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-		ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-		Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-		SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-		ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-		ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-	};
+	const tableRef = React.createRef();
 
 	return (
 		<div style={{ width: '100%' }}>
+			<link
+				rel="stylesheet"
+				href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			/>
 			<MaterialTable
 				title="Accounts"
-				icons={tableIcons}
+				tableRef={tableRef}
 				options={{
 					paging: false
 				}}
@@ -57,19 +24,26 @@ function AccountsTable() {
 					{ title: 'Updated At', field: 'updatedAt' },
 					{ title: 'Status', field: 'status' },
 				]}
-				data={query =>
+				data={() =>
 					new Promise(resolve => {
 						let url = '/api/accounts/'
 						fetch(url)
 							.then(response => response.json())
 							.then(result => {
-								console.log(result);
 								resolve({
 									data: result.data,
 								})
 							})
 					})
 				}
+				actions={[
+					{
+						icon: 'refresh',
+						tooltip: 'Refresh Data',
+						isFreeAction: true,
+						onClick: () => tableRef.current && tableRef.current.onQueryChange(),
+					}
+				]}
 			/>
 		</div>
 	);
