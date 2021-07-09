@@ -56,7 +56,7 @@ app.patch('/api/accounts/:id', async (req, res, next) => {
 				break;
 			default:
 				res.status(422).send('Status is invalid');
-				break;
+				return;
 		}
 	}
 	await models.Account.updateOne({ _id: req.params.id }, query).exec();

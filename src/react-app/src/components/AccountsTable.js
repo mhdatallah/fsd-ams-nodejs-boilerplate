@@ -1,7 +1,7 @@
 import React from "react";
 import MaterialTable, { MTableToolbar } from 'material-table';
 import "./AccountsTable.css";
-import { getAccounts } from '../api'
+import { getAccounts, updateAccount } from '../api'
 
 function AccountsTable() {
 
@@ -16,6 +16,7 @@ function AccountsTable() {
 				setFilteredAccounts(response.data.data);
 			})
 			.catch((error) => {
+				alert('Oops, something went wrong. Please try again later.');
 				console.error(error);
 			});
 	}
@@ -81,7 +82,79 @@ function AccountsTable() {
 						tooltip: 'Refresh Data',
 						isFreeAction: true,
 						onClick: () => fetchAccounts(),
-					}
+					},
+					approveData => ({
+						icon: 'check',
+						tooltip: 'Approve Account',
+						hidden: approveData.status != 'pending',
+						onClick: () => {
+							if (window.confirm(`Are you sure you want to approve the account ${approveData._id}?`)) {
+								let payload = (({ _id, status }) => ({ _id, status }))(approveData);
+								payload.status = 'approved';
+								updateAccount(payload).then(() => {
+									fetchAccounts();
+									alert('Account approved!');
+								}).catch((error) => {
+									alert('Oops, something went wrong. Please try again later.')
+									console.error(error);
+								});
+							};
+						}
+					}),
+					fundData => ({
+						icon: 'attach_money',
+						tooltip: 'Fund Account',
+						hidden: fundData.status != 'approved',
+						onClick: () => {
+							if (window.confirm(`Are you sure you want to fund the account ${fundData._id}?`)) {
+								let payload = (({ _id, status }) => ({ _id, status }))(fundData);
+								payload.status = 'funded';
+								updateAccount(payload).then(() => {
+									fetchAccounts();
+									alert('Account funded successfully!');
+								}).catch((error) => {
+									alert('Oops, something went wrong. Please try again later.')
+									console.error(error);
+								});
+							};
+						}
+					}),
+					closeData => ({
+						icon: 'close',
+						tooltip: 'Close Account',
+						hidden: (parseInt(closeData.balance) > 0) && (closeData.status != 'approved' || closeData.status != 'funded'),
+						onClick: () => {
+							if (window.confirm(`Are you sure you want to close the account ${closeData._id}?`)) {
+								let payload = (({ _id, status }) => ({ _id, status }))(closeData);
+								payload.status = 'closed';
+								updateAccount(payload).then(() => {
+									fetchAccounts();
+									alert('Account closed successfully!');
+								}).catch((error) => {
+									alert('Oops, something went wrong. Please try again later.')
+									console.error(error);
+								});
+							};
+						}
+					}),
+					suspendData => ({
+						icon: 'block',
+						tooltip: 'Suspend Account',
+						hidden: suspendData.status == 'suspended',
+						onClick: () => {
+							if (window.confirm(`Are you sure you want to suspsend the account ${suspendData._id}?`)) {
+								let payload = (({ _id, status }) => ({ _id, status }))(suspendData);
+								payload.status = 'suspended';
+								updateAccount(payload).then(() => {
+									fetchAccounts();
+									alert('Account closed successfully!');
+								}).catch((error) => {
+									alert('Oops, something went wrong. Please try again later.')
+									console.error(error);
+								});
+							};
+						}
+					})
 				]}
 				components={{
 					Toolbar: props => (
