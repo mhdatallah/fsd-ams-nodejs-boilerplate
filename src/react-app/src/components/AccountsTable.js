@@ -1,12 +1,13 @@
 import React from "react";
 import MaterialTable from 'material-table';
+import "./AccountsTable.css";
 
 function AccountsTable() {
 
 	const tableRef = React.createRef();
 
 	return (
-		<div style={{ width: '100%' }}>
+		<div className="container">
 			<link
 				rel="stylesheet"
 				href="https://fonts.googleapis.com/icon?family=Material+Icons"
