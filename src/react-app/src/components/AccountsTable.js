@@ -1,9 +1,10 @@
 import React from "react";
-import MaterialTable from 'material-table';
+import MaterialTable, { MTableToolbar } from 'material-table';
 import "./AccountsTable.css";
 
 function AccountsTable() {
 
+	const [accounts, setAccounts] = React.useState([]);
 	const tableRef = React.createRef();
 
 	return (
@@ -32,6 +33,7 @@ function AccountsTable() {
 						fetch(url)
 							.then(response => response.json())
 							.then(result => {
+								setAccounts(result.data);
 								resolve({
 									data: result.data,
 								})
@@ -46,6 +48,17 @@ function AccountsTable() {
 						onClick: () => tableRef.current && tableRef.current.onQueryChange(),
 					}
 				]}
+				components={{
+					Toolbar: props => (
+						<div>
+							<MTableToolbar {...props} />
+							<div className="toolbar">
+								<p>Total # of accounts: {accounts.length}</p>
+								<p>Total balance: {accounts.length ? accounts.reduce((a, b) => a + (b['balance'] || 0), 0) : 0}</p>
+							</div>
+						</div>
+					),
+				}}
 			/>
 		</div>
 	);
