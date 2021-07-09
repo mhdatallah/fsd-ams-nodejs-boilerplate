@@ -1,15 +1,10 @@
 import React from "react";
+import "./App.css";
 import AccountsTable from "./components/AccountsTable";
 
 function App() {
-
-	const accountsTable = {
-		display: 'flex',
-		justifyContent: 'center',
-		padding: '4em'
-	}
 	return (
-		<div style={accountsTable}>
+		<div className="accountsTable">
 			<AccountsTable />
 		</div>
 	);
