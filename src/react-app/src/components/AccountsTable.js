@@ -1,11 +1,22 @@
 import React from "react";
 import MaterialTable, { MTableToolbar } from 'material-table';
 import "./AccountsTable.css";
+import { getAccounts } from '../api'
 
 function AccountsTable() {
 
 	const [accounts, setAccounts] = React.useState([]);
 	const tableRef = React.createRef();
+
+	React.useEffect(() => {
+		getAccounts()
+			.then((response) => {
+				setAccounts(response.data.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}, []);
 
 	return (
 		<div className="container">
@@ -27,19 +38,7 @@ function AccountsTable() {
 					{ title: 'Updated At', field: 'updatedAt' },
 					{ title: 'Status', field: 'status' },
 				]}
-				data={() =>
-					new Promise(resolve => {
-						let url = '/api/accounts/'
-						fetch(url)
-							.then(response => response.json())
-							.then(result => {
-								setAccounts(result.data);
-								resolve({
-									data: result.data,
-								})
-							})
-					})
-				}
+				data={accounts}
 				actions={[
 					{
 						icon: 'refresh',
