@@ -33,28 +33,52 @@ app.patch('/api/accounts/:id', async (req, res, next) => {
 	}
 	let query = { $set: {} };
 	for (let key in req.body) {
-		if (account[key] && account[key] !== req.body[key])
+		if (account[key] != null && account[key] !== req.body[key])
 			query.$set[key] = req.body[key];
 	}
-	if (query.$set && query.$set.status) {
-		switch (query.$set.status) {
-			case 'approved':
-				if (account.status !== 'pending') {
-					res.sendStatus(403);
-					return;
-				}
-				break;
-			case 'funded':
-				if (account.status !== 'approved') {
-					res.sendStatus(403);
-					return;
-				}
-				break;
-			case 'closed':
-				break;
-			default:
-				res.status(422).send('Status is invalid');
+	if (query.$set) {
+		if (query.$set.hasOwnProperty('_id') || query.$set.hasOwnProperty('id')) {
+			res.status(403).send('ID is read-only.');
+			return;
+		}
+		if (query.$set.hasOwnProperty('createdAt')) {
+			res.status(403).send('createdAt is read-only.');
+			return;
+		}
+		if (query.$set.hasOwnProperty('updatedAt')) {
+			res.status(403).send('updatedAt is read-only.');
+			return;
+		}
+		if (query.$set.balance != null) {
+			if (!isNumeric(query.$set.balance)) {
+				res.status(422).send('Balance is invalid');
 				return;
+			}
+		}
+		if (query.$set.status) {
+			switch (query.$set.status) {
+				case 'approved':
+					if (account.status !== 'pending') {
+						res.sendStatus(403);
+						return;
+					}
+					break;
+				case 'funded':
+					if (account.status !== 'approved') {
+						res.sendStatus(403);
+						return;
+					}
+					break;
+				case 'closed':
+					if (parseInt(account.balance) > 0) {
+						res.status(403).send('Balance is greater than 0.');
+						return;
+					}
+					break;
+				default:
+					res.status(422).send('Status is invalid');
+					return;
+			}
 		}
 	}
 	await models.Account.updateOne({ _id: req.params.id }, query).exec();
@@ -67,3 +91,8 @@ connectDb().then(async () => {
 		console.log(`App ready and listening on port ${process.env.PORT}!`)
 	);
 });
+
+const isNumeric = (val) => {
+	if (typeof val != "number") return false
+	return !isNaN(val) && !isNaN(parseFloat(val))
+}
