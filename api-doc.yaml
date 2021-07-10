@@ -1,0 +1,117 @@
+openapi: "3.0.3"
+
+info:
+  title: Sarwa API
+  version: "1.3.1"
+
+servers:
+  - url: http://localhost/mock
+    description: Mock
+  - url: http://localhost:3001/api
+    description: Back-End Local Instance
+  - url: https://{environment}.sarwa.com/api
+    description: Back-End Server
+    variables:
+      environment:
+        enum:
+          - stg
+          - preprod
+        default: stg
+
+tags:
+  - name: accounts
+    description: A service for handling accounts CRUD operations.
+
+paths:
+  /accounts:
+    get:
+      operationId: listAccounts
+      description: Retreive the accounts.
+      tags:
+        - accounts
+      responses:
+        200:
+          description: Returns all Accounts.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/account"
+    post:
+      operationId: createAccounts
+      description: Create a new Account.
+      tags:
+        - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/account"
+      responses:
+        201:
+          description: Returns HTTP created status code.
+  /accounts/{id}:
+    parameters:
+      - $ref: "#/components/parameters/accountId"
+    get:
+      operationId: readAccount
+      description: Retreive the account
+      tags:
+        - accounts
+      responses:
+        200:
+          description: Returns the requested account.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/account"
+    patch:
+      operationId: updateAccount
+      description: Update an Account.
+      tags:
+        - accounts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/account"
+      responses:
+        204:
+          description: Returns HTTP No Content status code
+
+components:
+  parameters:
+    accountId:
+      name: id
+      in: path
+      required: true
+      description: The Account ID.
+      schema:
+        $ref: "#/components/schemas/accountId"
+  schemas:
+    accountId:
+      type: string
+    account:
+      type: object
+      properties:
+        _id:
+          type: string
+          readOnly: true
+          example: 5dgfs68g56f7sd5gs7dfg
+        balance:
+          type: number
+          example: 40000
+        createdAt:
+          type: string
+          readOnly: true
+        updatedAt:
+          type: string
+          readOnly: true
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - funded
+            - closed
+            - suspended
