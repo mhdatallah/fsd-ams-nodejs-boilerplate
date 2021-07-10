@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import "dotenv/config";
 
@@ -26,7 +27,38 @@ app.get("/api/accounts", (req, res) => {
 	});
 });
 
-app.patch('/api/accounts/:id', async (req, res, next) => {
+// Not tested nor it is being consumed by the front-end. This is just for demonstration purposes.
+app.post("/api/accounts", (req, res) => {
+	const account = new models.Account({
+		_id: new mongoose.Types.ObjectId(),
+		status: 'pending',
+		balance: 0
+	});
+	account
+		.save()
+		.then(result => {
+			res.status(201).json({
+				message: "Handling POST requests to /accounts",
+				createdAccount: result
+			});
+		})
+		.catch(err => {
+			res.status(500).json({
+				error: err
+			});
+		});
+});
+
+// Not tested nor it is being consumed by the front-end. This is just for demonstration purposes.
+app.get("/api/accounts/:id", async (req, res) => {
+	const account = await models.Account.findById(req.params.id).exec();
+	res.status(200).json({
+		message: "Handling GET requests to /accounts/{id}",
+		response: account
+	});
+});
+
+app.patch('/api/accounts/:id', async (req, res) => {
 	const account = await models.Account.findById(req.params.id).exec();
 	if (!account) {
 		return res.status(404).send('The account with the given ID was not found.');
