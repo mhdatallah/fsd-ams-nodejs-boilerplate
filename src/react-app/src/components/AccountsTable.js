@@ -122,7 +122,7 @@ function AccountsTable() {
 					closeData => ({
 						icon: 'close',
 						tooltip: 'Close Account',
-						hidden: (parseInt(closeData.balance) > 0) && (closeData.status != 'approved' || closeData.status != 'funded'),
+						hidden: (parseInt(closeData.balance) > 0) || (closeData.status == 'closed'),
 						onClick: () => {
 							if (window.confirm(`Are you sure you want to close the account ${closeData._id}?`)) {
 								let payload = (({ _id, status }) => ({ _id, status }))(closeData);
