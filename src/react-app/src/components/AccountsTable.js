@@ -137,24 +137,24 @@ function AccountsTable() {
 							};
 						}
 					}),
-					suspendData => ({
-						icon: 'block',
-						tooltip: 'Suspend Account',
-						hidden: suspendData.status == 'suspended',
-						onClick: () => {
-							if (window.confirm(`Are you sure you want to suspsend the account ${suspendData._id}?`)) {
-								let payload = (({ _id, status }) => ({ _id, status }))(suspendData);
-								payload.status = 'suspended';
-								updateAccount(payload).then(() => {
-									fetchAccounts();
-									alert('Account closed successfully!');
-								}).catch((error) => {
-									alert('Oops, something went wrong. Please try again later.')
-									console.error(error);
-								});
-							};
-						}
-					})
+					// suspendData => ({
+					// 	icon: 'block',
+					// 	tooltip: 'Suspend Account',
+					// 	hidden: suspendData.status == 'suspended',
+					// 	onClick: () => {
+					// 		if (window.confirm(`Are you sure you want to suspsend the account ${suspendData._id}?`)) {
+					// 			let payload = (({ _id, status }) => ({ _id, status }))(suspendData);
+					// 			payload.status = 'suspended';
+					// 			updateAccount(payload).then(() => {
+					// 				fetchAccounts();
+					// 				alert('Account closed successfully!');
+					// 			}).catch((error) => {
+					// 				alert('Oops, something went wrong. Please try again later.')
+					// 				console.error(error);
+					// 			});
+					// 		};
+					// 	}
+					// })
 				]}
 				components={{
 					Toolbar: props => (

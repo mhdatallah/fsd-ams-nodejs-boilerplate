@@ -52,8 +52,6 @@ app.patch('/api/accounts/:id', async (req, res, next) => {
 				break;
 			case 'closed':
 				break;
-			case 'suspended':
-				break;
 			default:
 				res.status(422).send('Status is invalid');
 				return;
