@@ -76,7 +76,7 @@ function AccountsTable() {
 				return data.status != AccountStatusEnum.APPROVED;
 			case ActionsEnum.CLOSE:
 				// eslint-disable-next-line
-				return (parseInt(data.balance) > 0) || (data.status == AccountStatusEnum.CLOSED);
+				return (parseInt(data.balance) > 0) || (data.status == AccountStatusEnum.CLOSED || data.status == AccountStatusEnum.SUSPENDED);
 			case ActionsEnum.SUSPEND:
 				// eslint-disable-next-line
 				return data.status == AccountStatusEnum.SUSPENDED;
