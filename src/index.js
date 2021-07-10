@@ -75,6 +75,8 @@ app.patch('/api/accounts/:id', async (req, res, next) => {
 						return;
 					}
 					break;
+				case 'suspended':
+					break;
 				default:
 					res.status(422).send('Status is invalid');
 					return;
@@ -82,7 +84,7 @@ app.patch('/api/accounts/:id', async (req, res, next) => {
 		}
 	}
 	await models.Account.updateOne({ _id: req.params.id }, query).exec();
-	res.sendStatus(200);
+	res.sendStatus(204);
 });
 
 connectDb().then(async () => {

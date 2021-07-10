@@ -1,14 +1,21 @@
 import React from "react";
 import MaterialTable, { MTableToolbar } from 'material-table';
 import "./AccountsTable.css";
-import { getAccounts, updateAccount } from '../api'
+import { getAccounts, updateAccount } from '../api';
+import { AccountStatusEnum } from '../models/accountStatusEnum';
+import { AccountFieldsEnum } from '../models/accountFieldsEnum';
+import { ActionsEnum } from '../models/actionsEnum';
+import { CONSTANTS } from '../models/constants'
 
 function AccountsTable() {
 
+	// accounts is what is being returned from the back-end.
+	// filteredAccounts is what is being displayed according to the user filering.
 	const [accounts, setAccounts] = React.useState([]);
 	const [filteredAccounts, setFilteredAccounts] = React.useState([]);
 	const tableRef = React.createRef();
 
+	// Fetch the accounts from the api service
 	const fetchAccounts = () => {
 		getAccounts()
 			.then((response) => {
@@ -16,11 +23,12 @@ function AccountsTable() {
 				setFilteredAccounts(response.data.data);
 			})
 			.catch((error) => {
-				alert('Oops, something went wrong. Please try again later.');
+				alert(CONSTANTS.ERROR_SOMETHING_WENT_WRONG);
 				console.error(error);
 			});
 	}
 
+	// Updating the filtered accounts display. Directly updating the state threw a warning because it was taking too long.
 	const updateFilteredAccounts = (predicate, data) => {
 		let tmp = filteredAccounts;
 		if (predicate) {
@@ -35,138 +43,149 @@ function AccountsTable() {
 		setFilteredAccounts(tmp);
 	}
 
+	const handleActionClick = (data, action, newStatus) => {
+		if (window.confirm(`${CONSTANTS.PROMPT_ARE_YOU_SURE} ${action} the account ${data._id}?`)) {
+			// Getting only the required fields (_id and status) instead of the whole object.
+			// This is to match the HTTP PATCH standard of sending a partial update, unlike PUT where we send the whole object.
+			let payload = (({ _id, status }) => ({ _id, status }))(data);
+			payload.status = newStatus;
+			updateAccount(payload).then(() => {
+				fetchAccounts();
+				alert(CONSTANTS.SUCCESS);
+			}).catch((error) => {
+				alert(CONSTANTS.ERROR_SOMETHING_WENT_WRONG);
+				console.error(error);
+			});
+		}
+	}
+
+	// Calculate the total balance of the displayed (filtered) accounts. Default = 0.
+	const calculateTotalBalance = (accountsList) => {
+		return accountsList.length ? accountsList.reduce((a, b) => a + (b['balance'] || 0), 0) : 0;
+	}
+
+	// Specify if an action is allowed given specific business requirements. 
+	const actionIsDisabled = (action, data) => {
+		switch (action) {
+			// I am intentionally disabling the linter here, because I do not want to validate the type
+			case ActionsEnum.APPROVE:
+				// eslint-disable-next-line
+				return data.status != AccountStatusEnum.PENDING;
+			case ActionsEnum.FUND:
+				// eslint-disable-next-line
+				return data.status != AccountStatusEnum.APPROVED;
+			case ActionsEnum.CLOSE:
+				// eslint-disable-next-line
+				return (parseInt(data.balance) > 0) || (data.status == AccountStatusEnum.CLOSED);
+			case ActionsEnum.SUSPEND:
+				// eslint-disable-next-line
+				return data.status == AccountStatusEnum.SUSPENDED;
+			default:
+				return true;
+		}
+	}
+
+	// Some fancy UI capitlization. Has no effect on the logic.
+	const capitalizeFirstLetter = (string) => {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+
+	const tableColumns = [
+		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_ID, field: AccountFieldsEnum.ID, filtering: false },
+		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_BALANCE, field: AccountFieldsEnum.BALANCE, filtering: false },
+		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_CREATED_AT, field: AccountFieldsEnum.CREATED_AT, filtering: false },
+		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_UPDATED_AT, field: AccountFieldsEnum.UPDATED_AT, filtering: false },
+		{
+			title: CONSTANTS.ACCOUNTS_TABLE_COL_STATUS,
+			field: AccountFieldsEnum.STATUS,
+			lookup: {
+				'pending': capitalizeFirstLetter(AccountStatusEnum.PENDING),
+				'approved': capitalizeFirstLetter(AccountStatusEnum.APPROVED),
+				'funded': capitalizeFirstLetter(AccountStatusEnum.FUNDED),
+				'closed': capitalizeFirstLetter(AccountStatusEnum.CLOSED),
+				'suspended': capitalizeFirstLetter(AccountStatusEnum.SUSPENDED),
+			},
+			customFilterAndSearch: (term, data) => {
+				const predicate = term.length ? term.includes(data.status) : true;
+				updateFilteredAccounts(predicate, data);
+				return predicate;
+			}
+		},
+	]
+
+	const tableActions = [
+		{
+			icon: 'refresh',
+			tooltip: CONSTANTS.TOOLTIP_REFRESH,
+			isFreeAction: true,
+			onClick: () => fetchAccounts(),
+		},
+		approveData => ({
+			icon: 'check',
+			tooltip: CONSTANTS.TOOLTIP_APPROVE_ACCOUNT,
+			hidden: actionIsDisabled(ActionsEnum.APPROVE, approveData),
+			onClick: () => handleActionClick(approveData, ActionsEnum.APPROVE, AccountStatusEnum.APPROVED)
+		}),
+		fundData => ({
+			icon: 'attach_money',
+			tooltip: CONSTANTS.TOOLTIP_FUND_ACCOUNT,
+			hidden: actionIsDisabled(ActionsEnum.FUND, fundData),
+			onClick: () => handleActionClick(fundData, ActionsEnum.FUND, AccountStatusEnum.APPROVED)
+		}),
+		closeData => ({
+			icon: 'close',
+			tooltip: CONSTANTS.TOOLTIP_CLOSE_ACCOUNT,
+			hidden: actionIsDisabled(ActionsEnum.CLOSE, closeData),
+			onClick: () => handleActionClick(closeData, ActionsEnum.CLOSE, AccountStatusEnum.APPROVED)
+		}),
+		suspendData => ({
+			icon: 'block',
+			tooltip: CONSTANTS.TOOLTIP_SUSPEND_ACCOUNT,
+			hidden: actionIsDisabled(ActionsEnum.SUSPEND, suspendData),
+			onClick: () => handleActionClick(suspendData, ActionsEnum.SUSPEND, AccountStatusEnum.APPROVED)
+		})
+	];
+
+	const tableOptions = {
+		filtering: true,
+		paging: false,
+		search: false
+	};
+
+	const customComponents = {
+		Toolbar: props => (
+			<div>
+				<MTableToolbar {...props} />
+				<div className="toolbar">
+					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_NO_ACCOUNTS} ${filteredAccounts.length}`}</p>
+					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_BALANCE} ${calculateTotalBalance(filteredAccounts)}`}</p>
+				</div>
+			</div>
+		),
+	};
+
 	React.useEffect(() => {
 		fetchAccounts();
 	}, []);
 
 	return (
 		<div className="container">
+			{/* 
+			Including the Google Fonts CDN here is not ideal, but this is for the sake of swift delivery.
+			I didn't want to get busy with installing the fonts and importing them.
+			*/}
 			<link
 				rel="stylesheet"
 				href="https://fonts.googleapis.com/icon?family=Material+Icons"
 			/>
 			<MaterialTable
-				title="Accounts"
+				title={CONSTANTS.ACCOUNTS_TABLE_TITLE}
 				tableRef={tableRef}
-				options={{
-					filtering: true,
-					paging: false,
-					search: false
-				}}
-				columns={[
-					{ title: 'ID', field: '_id', filtering: false },
-					{ title: 'Balance', field: 'balance', filtering: false },
-					{ title: 'Created At', field: 'createdAt', filtering: false },
-					{ title: 'Updated At', field: 'updatedAt', filtering: false },
-					{
-						title: 'Status',
-						field: 'status',
-						lookup: {
-							'pending': 'Pending',
-							'approved': 'Approved',
-							'funded': 'Funded',
-							'closed': 'Closed',
-							'suspended': 'Suspended',
-						},
-						customFilterAndSearch: (term, data) => {
-							const predicate = term.length ? term.includes(data.status) : true;
-							updateFilteredAccounts(predicate, data);
-							return predicate;
-						}
-					},
-				]}
+				options={tableOptions}
+				columns={tableColumns}
 				data={accounts}
-				actions={[
-					{
-						icon: 'refresh',
-						tooltip: 'Refresh Data',
-						isFreeAction: true,
-						onClick: () => fetchAccounts(),
-					},
-					approveData => ({
-						icon: 'check',
-						tooltip: 'Approve Account',
-						hidden: approveData.status != 'pending',
-						onClick: () => {
-							if (window.confirm(`Are you sure you want to approve the account ${approveData._id}?`)) {
-								let payload = (({ _id, status }) => ({ _id, status }))(approveData);
-								payload.status = 'approved';
-								updateAccount(payload).then(() => {
-									fetchAccounts();
-									alert('Account approved!');
-								}).catch((error) => {
-									alert('Oops, something went wrong. Please try again later.')
-									console.error(error);
-								});
-							};
-						}
-					}),
-					fundData => ({
-						icon: 'attach_money',
-						tooltip: 'Fund Account',
-						hidden: fundData.status != 'approved',
-						onClick: () => {
-							if (window.confirm(`Are you sure you want to fund the account ${fundData._id}?`)) {
-								let payload = (({ _id, status }) => ({ _id, status }))(fundData);
-								payload.status = 'funded';
-								updateAccount(payload).then(() => {
-									fetchAccounts();
-									alert('Account funded successfully!');
-								}).catch((error) => {
-									alert('Oops, something went wrong. Please try again later.')
-									console.error(error);
-								});
-							};
-						}
-					}),
-					closeData => ({
-						icon: 'close',
-						tooltip: 'Close Account',
-						hidden: (parseInt(closeData.balance) > 0) || (closeData.status == 'closed'),
-						onClick: () => {
-							if (window.confirm(`Are you sure you want to close the account ${closeData._id}?`)) {
-								let payload = (({ _id, status }) => ({ _id, status }))(closeData);
-								payload.status = 'closed';
-								updateAccount(payload).then(() => {
-									fetchAccounts();
-									alert('Account closed successfully!');
-								}).catch((error) => {
-									alert('Oops, something went wrong. Please try again later.')
-									console.error(error);
-								});
-							};
-						}
-					}),
-					// suspendData => ({
-					// 	icon: 'block',
-					// 	tooltip: 'Suspend Account',
-					// 	hidden: suspendData.status == 'suspended',
-					// 	onClick: () => {
-					// 		if (window.confirm(`Are you sure you want to suspsend the account ${suspendData._id}?`)) {
-					// 			let payload = (({ _id, status }) => ({ _id, status }))(suspendData);
-					// 			payload.status = 'suspended';
-					// 			updateAccount(payload).then(() => {
-					// 				fetchAccounts();
-					// 				alert('Account closed successfully!');
-					// 			}).catch((error) => {
-					// 				alert('Oops, something went wrong. Please try again later.')
-					// 				console.error(error);
-					// 			});
-					// 		};
-					// 	}
-					// })
-				]}
-				components={{
-					Toolbar: props => (
-						<div>
-							<MTableToolbar {...props} />
-							<div className="toolbar">
-								<p>Total # of accounts: {filteredAccounts.length}</p>
-								<p>Total balance: {filteredAccounts.length ? filteredAccounts.reduce((a, b) => a + (b['balance'] || 0), 0) : 0}</p>
-							</div>
-						</div>
-					),
-				}}
+				actions={tableActions}
+				components={customComponents}
 			/>
 		</div>
 	);
