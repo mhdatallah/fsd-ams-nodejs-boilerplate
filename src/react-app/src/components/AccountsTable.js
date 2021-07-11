@@ -130,19 +130,19 @@ function AccountsTable() {
 			icon: 'attach_money',
 			tooltip: CONSTANTS.TOOLTIP_FUND_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.FUND, fundData),
-			onClick: () => handleActionClick(fundData, ActionsEnum.FUND, AccountStatusEnum.APPROVED)
+			onClick: () => handleActionClick(fundData, ActionsEnum.FUND, AccountStatusEnum.FUNDED)
 		}),
 		closeData => ({
 			icon: 'close',
 			tooltip: CONSTANTS.TOOLTIP_CLOSE_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.CLOSE, closeData),
-			onClick: () => handleActionClick(closeData, ActionsEnum.CLOSE, AccountStatusEnum.APPROVED)
+			onClick: () => handleActionClick(closeData, ActionsEnum.CLOSE, AccountStatusEnum.CLOSED)
 		}),
 		suspendData => ({
 			icon: 'block',
 			tooltip: CONSTANTS.TOOLTIP_SUSPEND_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.SUSPEND, suspendData),
-			onClick: () => handleActionClick(suspendData, ActionsEnum.SUSPEND, AccountStatusEnum.APPROVED)
+			onClick: () => handleActionClick(suspendData, ActionsEnum.SUSPEND, AccountStatusEnum.SUSPENDED)
 		})
 	];
 
