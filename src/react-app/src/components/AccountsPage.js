@@ -1,7 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 import MaterialTable, { MTableToolbar } from 'material-table';
-import { getAccounts, updateAccount } from '../api';
+import { getAccounts, updateAccount } from '../services/api';
 import { AccountStatusEnum } from '../models/accountStatusEnum';
 import { AccountFieldsEnum } from '../models/accountFieldsEnum';
 import { ActionsEnum } from '../models/actionsEnum';
