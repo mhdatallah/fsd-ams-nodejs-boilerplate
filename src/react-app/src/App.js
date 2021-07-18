@@ -1,11 +1,11 @@
 import React from "react";
 import "./App.css";
-import AccountsTable from "./components/AccountsTable";
+import AccountsPage from "./components/AccountsPage";
 
 function App() {
 	return (
-		<div className="accountsTable">
-			<AccountsTable />
+		<div className="page">
+			<AccountsPage />
 		</div>
 	);
 }

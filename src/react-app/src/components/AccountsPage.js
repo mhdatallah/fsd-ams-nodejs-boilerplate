@@ -1,6 +1,6 @@
 import React from "react";
 import MaterialTable, { MTableToolbar } from 'material-table';
-import "./AccountsTable.css";
+import "./AccountsPage.css";
 import { getAccounts, updateAccount } from '../api';
 import { AccountStatusEnum } from '../models/accountStatusEnum';
 import { AccountFieldsEnum } from '../models/accountFieldsEnum';
