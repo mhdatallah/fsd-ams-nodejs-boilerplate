@@ -1,13 +1,17 @@
 import React from "react";
-import "./App.css";
+import styled from 'styled-components';
 import AccountsPage from "./components/AccountsPage";
 
 function App() {
 	return (
-		<div className="page">
+		<Page>
 			<AccountsPage />
-		</div>
+		</Page>
 	);
 }
+
+const Page = styled.div`
+	padding: 4em;
+`;
 
 export default App;

@@ -1,6 +1,6 @@
 import React from "react";
+import styled from 'styled-components';
 import MaterialTable, { MTableToolbar } from 'material-table';
-import "./AccountsPage.css";
 import { getAccounts, updateAccount } from '../api';
 import { AccountStatusEnum } from '../models/accountStatusEnum';
 import { AccountFieldsEnum } from '../models/accountFieldsEnum';
@@ -156,10 +156,10 @@ function AccountsTable() {
 		Toolbar: props => (
 			<div>
 				<MTableToolbar {...props} />
-				<div className="toolbar">
+				<ToolbarFields>
 					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_NO_ACCOUNTS} ${filteredAccounts.length}`}</p>
 					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_BALANCE} ${calculateTotalBalance(filteredAccounts)}`}</p>
-				</div>
+				</ToolbarFields>
 			</div>
 		),
 	};
@@ -169,7 +169,7 @@ function AccountsTable() {
 	}, []);
 
 	return (
-		<div className="container">
+		<Wrapper>
 			{/* 
 			Including the Google Fonts CDN here is not ideal, but this is for the sake of swift delivery.
 			I didn't want to get busy with installing the fonts and importing them.
@@ -187,8 +187,18 @@ function AccountsTable() {
 				actions={tableActions}
 				components={customComponents}
 			/>
-		</div>
+		</Wrapper>
 	);
 }
+
+const Wrapper = styled.div`
+	width: 100%;
+`;
+
+const ToolbarFields = styled.div`
+	display: flex;
+	justify-content: space-evenly;
+	border-bottom: 1px solid lightgray;
+`;
 
 export default AccountsTable;
