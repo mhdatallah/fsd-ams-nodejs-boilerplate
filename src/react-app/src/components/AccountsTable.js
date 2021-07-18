@@ -1,32 +1,17 @@
 import React from "react";
 import styled from 'styled-components';
 import MaterialTable, { MTableToolbar } from 'material-table';
-import { getAccounts, updateAccount } from '../services/api';
 import { AccountStatusEnum } from '../models/accountStatusEnum';
 import { AccountFieldsEnum } from '../models/accountFieldsEnum';
 import { ActionsEnum } from '../models/actionsEnum';
 import { CONSTANTS } from '../models/constants'
 
-function AccountsTable() {
+function AccountsTable({ accounts, onRefreshClick, onActionClick }) {
 
 	// accounts is what is being returned from the back-end.
 	// filteredAccounts is what is being displayed according to the user filering.
-	const [accounts, setAccounts] = React.useState([]);
 	const [filteredAccounts, setFilteredAccounts] = React.useState([]);
 	const tableRef = React.createRef();
-
-	// Fetch the accounts from the api service
-	const fetchAccounts = () => {
-		getAccounts()
-			.then((response) => {
-				setAccounts(response.data.data);
-				setFilteredAccounts(response.data.data);
-			})
-			.catch((error) => {
-				alert(CONSTANTS.ERROR_SOMETHING_WENT_WRONG);
-				console.error(error);
-			});
-	}
 
 	// Updating the filtered accounts display. Directly updating the state threw a warning because it was taking too long.
 	const updateFilteredAccounts = (predicate, data) => {
@@ -41,22 +26,6 @@ function AccountsTable() {
 			}
 		}
 		setFilteredAccounts(tmp);
-	}
-
-	const handleActionClick = (data, action, newStatus) => {
-		if (window.confirm(`${CONSTANTS.PROMPT_ARE_YOU_SURE} ${action} the account ${data._id}?`)) {
-			// Getting only the required fields (_id and status) instead of the whole object.
-			// This is to match the HTTP PATCH standard of sending a partial update, unlike PUT where we send the whole object.
-			let payload = (({ _id, status }) => ({ _id, status }))(data);
-			payload.status = newStatus;
-			updateAccount(payload).then(() => {
-				fetchAccounts();
-				alert(CONSTANTS.SUCCESS);
-			}).catch((error) => {
-				alert(CONSTANTS.ERROR_SOMETHING_WENT_WRONG);
-				console.error(error);
-			});
-		}
 	}
 
 	// Calculate the total balance of the displayed (filtered) accounts. Default = 0.
@@ -118,31 +87,31 @@ function AccountsTable() {
 			icon: 'refresh',
 			tooltip: CONSTANTS.TOOLTIP_REFRESH,
 			isFreeAction: true,
-			onClick: () => fetchAccounts(),
+			onClick: () => onRefreshClick(),
 		},
 		approveData => ({
 			icon: 'check',
 			tooltip: CONSTANTS.TOOLTIP_APPROVE_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.APPROVE, approveData),
-			onClick: () => handleActionClick(approveData, ActionsEnum.APPROVE, AccountStatusEnum.APPROVED)
+			onClick: () => onActionClick(approveData, ActionsEnum.APPROVE, AccountStatusEnum.APPROVED)
 		}),
 		fundData => ({
 			icon: 'attach_money',
 			tooltip: CONSTANTS.TOOLTIP_FUND_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.FUND, fundData),
-			onClick: () => handleActionClick(fundData, ActionsEnum.FUND, AccountStatusEnum.FUNDED)
+			onClick: () => onActionClick(fundData, ActionsEnum.FUND, AccountStatusEnum.FUNDED)
 		}),
 		closeData => ({
 			icon: 'close',
 			tooltip: CONSTANTS.TOOLTIP_CLOSE_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.CLOSE, closeData),
-			onClick: () => handleActionClick(closeData, ActionsEnum.CLOSE, AccountStatusEnum.CLOSED)
+			onClick: () => onActionClick(closeData, ActionsEnum.CLOSE, AccountStatusEnum.CLOSED)
 		}),
 		suspendData => ({
 			icon: 'block',
 			tooltip: CONSTANTS.TOOLTIP_SUSPEND_ACCOUNT,
 			hidden: actionIsDisabled(ActionsEnum.SUSPEND, suspendData),
-			onClick: () => handleActionClick(suspendData, ActionsEnum.SUSPEND, AccountStatusEnum.SUSPENDED)
+			onClick: () => onActionClick(suspendData, ActionsEnum.SUSPEND, AccountStatusEnum.SUSPENDED)
 		})
 	];
 
@@ -165,8 +134,8 @@ function AccountsTable() {
 	};
 
 	React.useEffect(() => {
-		fetchAccounts();
-	}, []);
+		setFilteredAccounts(accounts);
+	}, [accounts]);
 
 	return (
 		<Wrapper>

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
-import AccountsPage from "./components/AccountsPage";
+import AccountsPage from "./views/AccountsPage";
 
 function App() {
 	return (
