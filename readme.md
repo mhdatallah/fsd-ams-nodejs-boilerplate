@@ -26,13 +26,15 @@ First, for the sake of swift delivery, I have done some research on the differen
 
 I have followed [grouping by file type](https://reactjs.org/docs/faq-structure.html) approach in structuring the files of the project:
 - [components](./src/react-app/src/components): Includes all the UI components. For now, it's just [AccountsTable](./src/react-app/src/components/AccountsTable.js).
+- [views](./src/react-app/src/views): Includes all the pages. For now, it's just [AccountsPage](./src/react-app/src/views/AccountsPage.js).
+- [services](./src/react-app/src/services): Includes all the services, mainly for HTTP communication with the back-end.
 - [models](./src/react-app/src/models): Includes all models:
   - [CONSTANTS](src/react-app/src/models/constants.js): All the UI constant texts. Doing this allows easier modifications as the application becomes more complex.
   - [ActionsEnum](src/react-app/src/models/actions.js): All the actions that the user can perform in the front-end.
   - [AccountStatusEnum](src/react-app/src/models/actions.js): All the statuses that an account can have. This is set by the business requirements.
   - [AccountFieldsEnum](src/react-app/src/models/actions.js): All the specific fields in the account object. This is being consumed by the UI.
 
-As for the communication with the back-end, to insure [separation of concerns](https://deviq.com/principles/separation-of-concerns), I have separated all the API calls in [api.js](./src/reac-app/src/../../react-app/src/api.js). This allows for easier code-handling and scalability as the system grows and the API calls become more complex.
+As for the communication with the back-end, to insure [separation of concerns](https://deviq.com/principles/separation-of-concerns), I have separated all the API calls in [api.js](./src/reac-app/src/../../react-app/src/services/api.js). This allows for easier code-handling and scalability as the system grows and the API calls become more complex.
 
 ---
 
