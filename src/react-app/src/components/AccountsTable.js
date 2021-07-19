@@ -62,8 +62,14 @@ function AccountsTable({ accounts, onRefreshClick, onActionClick }) {
 	const tableColumns = [
 		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_ID, field: AccountFieldsEnum.ID, filtering: false },
 		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_BALANCE, field: AccountFieldsEnum.BALANCE, filtering: false },
-		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_CREATED_AT, field: AccountFieldsEnum.CREATED_AT, filtering: false },
-		{ title: CONSTANTS.ACCOUNTS_TABLE_COL_UPDATED_AT, field: AccountFieldsEnum.UPDATED_AT, filtering: false },
+		{
+			title: CONSTANTS.ACCOUNTS_TABLE_COL_CREATED_AT, field: AccountFieldsEnum.CREATED_AT, filtering: false,
+			render: rowData => new Date(rowData[AccountFieldsEnum.CREATED_AT]).toLocaleString()
+		},
+		{
+			title: CONSTANTS.ACCOUNTS_TABLE_COL_UPDATED_AT, field: AccountFieldsEnum.UPDATED_AT, filtering: false,
+			render: rowData => new Date(rowData[AccountFieldsEnum.UPDATED_AT]).toLocaleString()
+		},
 		{
 			title: CONSTANTS.ACCOUNTS_TABLE_COL_STATUS,
 			field: AccountFieldsEnum.STATUS,
