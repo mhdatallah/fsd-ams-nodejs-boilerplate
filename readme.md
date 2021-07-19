@@ -36,6 +36,8 @@ I have followed [grouping by file type](https://reactjs.org/docs/faq-structure.h
 
 As for the communication with the back-end, to insure [separation of concerns](https://deviq.com/principles/separation-of-concerns), I have separated all the API calls in [api.js](./src/reac-app/src/../../react-app/src/services/api.js). This allows for easier code-handling and scalability as the system grows and the API calls become more complex.
 
+As the web app should be scalable enough to serve different pages (or components) for different URL paths, I have used [React Router](https://reactrouter.com/) to simplify the routing mechanism.
+
 ---
 
 ## Installation
