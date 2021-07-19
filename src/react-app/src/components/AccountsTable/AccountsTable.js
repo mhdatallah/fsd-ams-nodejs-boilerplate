@@ -1,10 +1,10 @@
 import React from "react";
 import styled from 'styled-components';
 import MaterialTable, { MTableToolbar } from 'material-table';
-import { AccountStatusEnum } from '../models/accountStatusEnum';
-import { AccountFieldsEnum } from '../models/accountFieldsEnum';
-import { ActionsEnum } from '../models/actionsEnum';
-import { CONSTANTS } from '../models/constants'
+import { AccountStatusEnum } from '../../models/accountStatusEnum';
+import { AccountFieldsEnum } from '../../models/accountFieldsEnum';
+import { ActionsEnum } from '../../models/actionsEnum';
+import { CONSTANTS } from '../../models/constants'
 
 function AccountsTable({ accounts, onRefreshClick, onActionClick }) {
 
@@ -131,9 +131,9 @@ function AccountsTable({ accounts, onRefreshClick, onActionClick }) {
 		Toolbar: props => (
 			<div>
 				<MTableToolbar {...props} />
-				<ToolbarFields>
-					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_NO_ACCOUNTS} ${filteredAccounts.length}`}</p>
-					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_BALANCE} ${calculateTotalBalance(filteredAccounts)}`}</p>
+				<ToolbarFields data-testid="toolbar">
+					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_NO_ACCOUNTS} ${filteredAccounts ? filteredAccounts.length : 0}`}</p>
+					<p>{`${CONSTANTS.ACCOUNTS_TABLE_TOOLBAR_TOTAL_BALANCE} ${filteredAccounts ? calculateTotalBalance(filteredAccounts) : 0}`}</p>
 				</ToolbarFields>
 			</div>
 		),
@@ -144,7 +144,7 @@ function AccountsTable({ accounts, onRefreshClick, onActionClick }) {
 	}, [accounts]);
 
 	return (
-		<Wrapper>
+		<Wrapper data-testid="table">
 			{/* 
 			Including the Google Fonts CDN here is not ideal, but this is for the sake of swift delivery.
 			I didn't want to get busy with installing the fonts and importing them.

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
-import AccountsPage from "./views/AccountsPage";
+import AccountsPage from "./views/AccountsPage/AccountsPage";
 import {
 	BrowserRouter as Router,
 	Route,
@@ -8,7 +8,7 @@ import {
 
 function App() {
 	return (
-		<Page>
+		<Page data-testid="app">
 			<Router>
 				{/* Serve the Accounts Page by default */}
 				<Route path={["/", "/accounts"]} component={AccountsPage} />

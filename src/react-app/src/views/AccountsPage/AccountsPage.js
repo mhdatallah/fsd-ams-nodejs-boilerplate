@@ -1,7 +1,7 @@
 import React from "react";
-import { getAccounts, updateAccount } from '../services/api';
-import { CONSTANTS } from '../models/constants'
-import AccountsTable from '../components/AccountsTable';
+import { getAccounts, updateAccount } from '../../services/api';
+import { CONSTANTS } from '../../models/constants'
+import AccountsTable from '../../components/AccountsTable/AccountsTable';
 
 function AccountsPage() {
 
@@ -41,10 +41,12 @@ function AccountsPage() {
 	}, []);
 
 	return (
-		<AccountsTable
-			accounts={accounts}
-			onRefreshClick={fetchAccounts}
-			onActionClick={handleActionClick} />
+		<div data-testid="accounts-table">
+			<AccountsTable
+				accounts={accounts}
+				onRefreshClick={fetchAccounts}
+				onActionClick={handleActionClick} />
+		</div>
 	);
 }
 
