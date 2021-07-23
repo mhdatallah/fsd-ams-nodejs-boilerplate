@@ -74,7 +74,7 @@ docker-compose up -d
 The above command wil run the following:
 
 - Nginx reverse proxy service that routes the traffic to the intended services
-- Mock server, which you can talk to by calling `http://lcoalhost/mock`. Integration with the API is not yet complete, but it will give you a glimpse of how the mock server works.
+- Mock server, which you can talk to by calling `http://lcoalhost/mock`.
 - SwaggerUI, which you can view in your browser by vising `http://localhost` 
 
 Note: No need to worry about any ports. All is being handled by the reverse proxy. You just need to talk to `http://localhost` (more accurately, you need to talk to `localhost` on port 80, which is the http port).
